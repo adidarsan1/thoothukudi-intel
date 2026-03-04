@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thoothukudi Intelligence Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#050a0f; --panel:#080f18; --border:#0d2a3f;
+    --accent:#00d4ff; --accent2:#ff6b00; --accent3:#00ff88;
+    --danger:#ff2244; --warn:#ffaa00; --text:#c8dde8; --dim:#4a6e80;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,212,255,0.015) 2px,rgba(0,212,255,0.015) 4px);pointer-events:none;z-index:9999;}
+  body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+  .wrap{position:relative;z-index:1;padding:12px;max-width:1600px;margin:0 auto;}
+
+header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(–border);padding-bottom:12px;margin-bottom:14px;}
+.logo{display:flex;align-items:center;gap:14px;}
+.shield{width:52px;height:52px;background:linear-gradient(135deg,#0a1f30,#0d2a3f);border:2px solid var(–accent);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-size:22px;animation:pulse 3s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 15px rgba(0,212,255,0.3)}50%{box-shadow:0 0 35px rgba(0,212,255,0.7)}}
+.title h1{font-family:‘Orbitron’,monospace;font-size:20px;color:var(–accent);letter-spacing:3px;}
+.title p{font-size:11px;color:var(–dim);letter-spacing:4px;font-family:‘Share Tech Mono’,monospace;margin-top:3px;}
+.hright{text-align:right;}
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,34,68,0.15);border:1px solid var(–danger);padding:4px 12px;font-family:‘Share Tech Mono’,monospace;font-size:11px;color:var(–danger);letter-spacing:2px;margin-bottom:4px;}
+.ldot{width:7px;height:7px;background:var(–danger);border-radius:50%;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.clock{font-family:‘Share Tech Mono’,monospace;font-size:13px;color:var(–accent);}
+
+.ticker-wrap{background:rgba(255,34,68,0.08);border:1px solid rgba(255,34,68,0.3);padding:7px 0;overflow:hidden;margin-bottom:14px;position:relative;}
+.ticker-label{position:absolute;left:0;top:0;bottom:0;background:var(–danger);color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;padding:0 12px;display:flex;align-items:center;z-index:2;}
+.ticker-inner{display:flex;gap:60px;animation:ticker 40s linear infinite;padding-left:90px;white-space:nowrap;}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-item{font-family:‘Share Tech Mono’,monospace;font-size:12px;color:var(–warn);}
+
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;}
+.stat-card{background:var(–panel);border:1px solid var(–border);padding:14px;position:relative;overflow:hidden;}
+.stat-card::before{content:’’;position:absolute;top:0;left:0;right:0;height:2px;}
+.sc-blue::before{background:var(–accent)} .sc-red::before{background:var(–danger)} .sc-yellow::before{background:var(–warn)} .sc-orange::before{background:var(–accent2)} .sc-green::before{background:var(–accent3)}
+.stat-label{font-size:10px;color:var(–dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.stat-num{font-family:‘Orbitron’,monospace;font-size:28px;font-weight:900;line-height:1;}
+.sc-blue .stat-num{color:var(–accent)} .sc-red .stat-num{color:var(–danger)} .sc-yellow .stat-num{color:var(–warn)} .sc-orange .stat-num{color:var(–accent2)} .sc-green .stat-num{color:var(–accent3)}
+.stat-sub{font-size:11px;color:var(–dim);margin-top:4px;}
+
+.main-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:12px;margin-bottom:12px;}
+.panel{background:var(–panel);border:1px solid var(–border);overflow:hidden;}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(–border);background:rgba(0,212,255,0.04);}
+.pt{font-size:11px;letter-spacing:3px;color:var(–accent);font-weight:700;display:flex;align-items:center;gap:8px;}
+.pb{font-family:‘Share Tech Mono’,monospace;font-size:10px;padding:2px 8px;border-radius:1px;}
+.pb-live{background:rgba(255,34,68,0.2);color:var(–danger);border:1px solid var(–danger);}
+.pb-ai{background:rgba(0,255,136,0.1);color:var(–accent3);border:1px solid var(–accent3);}
+.pb-count{background:rgba(0,212,255,0.1);color:var(–accent);border:1px solid var(–accent);}
+
+.feed{max-height:460px;overflow-y:auto;}
+.feed::-webkit-scrollbar{width:3px;}
+.feed::-webkit-scrollbar-thumb{background:var(–border);}
+
+.fi{padding:12px 14px;border-bottom:1px solid rgba(13,42,63,0.5);animation:fIn 0.4s ease;cursor:pointer;transition:background 0.2s;}
+.fi:hover{background:rgba(0,212,255,0.04);}
+@keyframes fIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.fi-meta{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;}
+.src{font-size:9px;padding:2px 7px;border-radius:1px;font-weight:700;letter-spacing:1px;font-family:‘Share Tech Mono’,monospace;}
+.s-din{background:rgba(255,170,0,0.2);color:var(–warn);border:1px solid rgba(255,170,0,0.4);}
+.s-hin{background:rgba(0,212,255,0.2);color:var(–accent);border:1px solid rgba(0,212,255,0.4);}
+.s-toi{background:rgba(255,107,0,0.2);color:var(–accent2);border:1px solid rgba(255,107,0,0.4);}
+.s-vik{background:rgba(255,34,68,0.2);color:var(–danger);border:1px solid rgba(255,34,68,0.4);}
+.s-put{background:rgba(0,255,136,0.2);color:var(–accent3);border:1px solid rgba(0,255,136,0.4);}
+.s-def{background:rgba(100,100,100,0.2);color:#aaa;border:1px solid rgba(100,100,100,0.4);}
+.rp{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700;font-family:‘Share Tech Mono’,monospace;margin-left:auto;}
+.r-high{background:rgba(255,34,68,0.2);color:var(–danger);}
+.r-medium{background:rgba(255,170,0,0.2);color:var(–warn);}
+.r-low{background:rgba(0,255,136,0.15);color:var(–accent3);}
+.fi-time{font-family:‘Share Tech Mono’,monospace;font-size:10px;color:var(–dim);}
+.fi-title{font-size:13px;color:var(–text);line-height:1.4;margin-bottom:4px;font-weight:600;}
+.fi-ai{font-size:11px;color:var(–dim);font-family:‘Share Tech Mono’,monospace;line-height:1.4;margin-bottom:5px;}
+.fi-link{font-size:10px;color:var(–accent);font-family:‘Share Tech Mono’,monospace;text-decoration:none;}
+.fi-link:hover{text-decoration:underline;}
+
+.ai-alert{padding:12px 14px;border-bottom:1px solid rgba(13,42,63,0.5);animation:fIn 0.4s ease;}
+.aa-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.aa-title{font-size:12px;font-weight:700;letter-spacing:1px;}
+.t-danger{color:var(–danger)} .t-warn{color:var(–warn)} .t-ok{color:var(–accent3)}
+.aa-body{font-size:12px;color:var(–text);line-height:1.5;margin-bottom:8px;font-family:‘Share Tech Mono’,monospace;opacity:.85;}
+.aa-meta{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{font-size:10px;padding:2px 8px;border-radius:1px;font-family:‘Share Tech Mono’,monospace;}
+.cl{background:rgba(0,212,255,0.1);color:var(–accent);}
+.cc{background:rgba(0,255,136,0.1);color:var(–accent3);}
+.ccat{background:rgba(255,107,0,0.1);color:var(–accent2);}
+.cs{background:rgba(255,170,0,0.1);color:var(–warn);}
+
+.empty-state{padding:40px 20px;text-align:center;color:var(–dim);font-family:‘Share Tech Mono’,monospace;font-size:12px;}
+.loading-spin{display:inline-block;width:20px;height:20px;border:2px solid var(–border);border-top-color:var(–accent);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:10px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.kw-grid{padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.kw{display:flex;align-items:center;justify-content:space-between;background:rgba(0,212,255,0.05);border:1px solid var(–border);padding:6px 10px;font-size:12px;cursor:pointer;transition:border-color 0.2s;}
+.kw:hover{border-color:var(–accent);}
+.kw.hot{border-color:rgba(255,34,68,0.4);background:rgba(255,34,68,0.05);}
+.kw.hot .kw-w{color:var(–danger);}
+.kw.warm{border-color:rgba(255,170,0,0.4);background:rgba(255,170,0,0.05);}
+.kw.warm .kw-w{color:var(–warn);}
+.kw-w{font-weight:600;}
+.kw-c{font-family:‘Share Tech Mono’,monospace;font-size:11px;color:var(–dim);}
+
+.wa-item{padding:10px 14px;border-bottom:1px solid rgba(13,42,63,0.5);display:flex;gap:10px;}
+.wa-ico{font-size:18px;margin-top:1px;}
+.wa-c{flex:1;}
+.wa-to{font-size:10px;color:var(–dim);font-family:‘Share Tech Mono’,monospace;}
+.wa-msg{font-size:12px;color:var(–text);margin:3px 0;line-height:1.4;}
+.wa-st{font-size:9px;padding:2px 7px;font-family:‘Share Tech Mono’,monospace;border-radius:1px;display:inline-block;}
+.st-sent{background:rgba(0,255,136,0.15);color:var(–accent3);}
+.st-skip{background:rgba(74,110,128,0.2);color:var(–dim);}
+
+.qbar{background:var(–panel);border:1px solid var(–border);display:flex;gap:0;margin-top:12px;}
+.qpre{padding:0 14px;background:rgba(0,212,255,0.08);border-right:1px solid var(–border);display:flex;align-items:center;font-family:‘Share Tech Mono’,monospace;font-size:12px;color:var(–accent);white-space:nowrap;}
+.qin{flex:1;background:transparent;border:none;outline:none;padding:12px 14px;font-family:‘Share Tech Mono’,monospace;font-size:12px;color:var(–text);caret-color:var(–accent);}
+.qin::placeholder{color:var(–dim);}
+.qbtn{padding:0 20px;background:var(–accent);border:none;color:var(–bg);font-family:‘Orbitron’,monospace;font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;}
+.qbtn:hover{background:#33dfff;}
+.qbtn:disabled{background:var(–dim);cursor:not-allowed;}
+
+.ai-resp{display:none;background:var(–panel);border:1px solid rgba(0,255,136,0.3);padding:14px;margin-top:8px;font-family:‘Share Tech Mono’,monospace;font-size:12px;color:var(–accent3);line-height:1.7;animation:fIn 0.3s ease;}
+.ai-resp.show{display:block;}
+.rl{font-size:10px;color:var(–dim);letter-spacing:3px;margin-bottom:8px;}
+
+.fetch-btn{padding:6px 14px;background:rgba(0,212,255,0.1);border:1px solid var(–accent);color:var(–accent);font-family:‘Share Tech Mono’,monospace;font-size:10px;cursor:pointer;letter-spacing:1px;}
+.fetch-btn:hover{background:rgba(0,212,255,0.2);}
+.fetch-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.last-fetch{font-size:10px;color:var(–dim);font-family:‘Share Tech Mono’,monospace;margin-top:3px;}
+
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}.bottom-grid{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(3,1fr)}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+
+  <header>
+    <div class="logo">
+      <div class="shield">🛡️</div>
+      <div class="title">
+        <h1>THOOTHUKUDI INTEL HUB</h1>
+        <p>REAL-TIME RSS INTELLIGENCE · TODAY ONLY</p>
+      </div>
+    </div>
+    <div class="hright">
+      <div class="live-badge"><div class="ldot"></div>LIVE RSS MONITORING</div>
+      <div class="clock" id="clock">--:--:-- IST</div>
+      <div class="last-fetch" id="lastFetch">Last fetch: --</div>
+    </div>
+  </header>
+
+  <!-- TICKER -->
+
+  <div class="ticker-wrap">
+    <div class="ticker-label">⚡ LIVE</div>
+    <div class="ticker-inner" id="ticker">
+      <span class="ticker-item">⏳ Loading today's intelligence feed...</span>
+      <span class="ticker-item">⏳ Loading today's intelligence feed...</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+
+  <div class="stats-row">
+    <div class="stat-card sc-blue"><div class="stat-label">TOTAL SIGNALS</div><div class="stat-num" id="sTotal">—</div><div class="stat-sub">Today only</div></div>
+    <div class="stat-card sc-red"><div class="stat-label">HIGH RISK</div><div class="stat-num" id="sHigh">—</div><div class="stat-sub">AI flagged</div></div>
+    <div class="stat-card sc-yellow"><div class="stat-label">MEDIUM RISK</div><div class="stat-num" id="sMed">—</div><div class="stat-sub">Under watch</div></div>
+    <div class="stat-card sc-orange"><div class="stat-label">WA ALERTS SENT</div><div class="stat-num" id="sAlert">—</div><div class="stat-sub">Today</div></div>
+    <div class="stat-card sc-green"><div class="stat-label">SOURCES ACTIVE</div><div class="stat-num" id="sSrc">9</div><div class="stat-sub">RSS feeds</div></div>
+  </div>
+
+  <!-- CONTROLS -->
+
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+    <button class="fetch-btn" id="fetchBtn" onclick="manualFetch()">⟳ FETCH NOW</button>
+    <span style="font-size:11px;color:var(--dim);font-family:'Share Tech Mono',monospace;">Auto-refresh every 15 min · Today's news only</span>
+    <div style="margin-left:auto;display:flex;gap:8px;">
+      <select id="filterRisk" onchange="renderFeeds()" style="background:var(--panel);border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;padding:5px 8px;">
+        <option value="all">ALL RISK</option>
+        <option value="high">HIGH ONLY</option>
+        <option value="medium">MEDIUM+</option>
+      </select>
+      <input id="searchBox" oninput="renderFeeds()" placeholder="Search..." style="background:var(--panel);border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;padding:5px 10px;outline:none;width:150px;">
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+
+  <div class="main-grid">
+
+```
+<!-- LIVE FEED -->
+<div class="panel">
+  <div class="ph">
+    <div class="pt">📡 RSS LIVE FEED</div>
+    <span class="pb pb-live">TODAY ONLY</span>
+  </div>
+  <div class="feed" id="liveFeed">
+    <div class="empty-state"><div class="loading-spin"></div><br>Fetching today's news...</div>
+  </div>
+</div>
+
+<!-- AI ANALYSIS -->
+<div class="panel">
+  <div class="ph">
+    <div class="pt">🤖 AI RISK ANALYSIS</div>
+    <span class="pb pb-ai">GPT-4 ACTIVE</span>
+  </div>
+  <div class="feed" id="aiPanel">
+    <div class="empty-state"><div class="loading-spin"></div><br>Waiting for AI analysis...</div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- BOTTOM GRID -->
+
+  <div class="bottom-grid">
+
+```
+<!-- KEYWORDS -->
+<div class="panel">
+  <div class="ph">
+    <div class="pt">🔑 KEYWORD HITS TODAY</div>
+    <span class="pb pb-count" id="kwCount">0 KEYWORDS</span>
+  </div>
+  <div class="kw-grid" id="kwGrid">
+    <div class="empty-state" style="grid-column:1/-1">Loading...</div>
+  </div>
+</div>
+
+<!-- WA QUEUE -->
+<div class="panel">
+  <div class="ph">
+    <div class="pt">📲 WHATSAPP ALERT LOG</div>
+    <span class="pb pb-live">AUTO-SEND</span>
+  </div>
+  <div id="waLog" style="max-height:220px;overflow-y:auto;">
+    <div class="empty-state">No alerts sent yet today</div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- AI QUERY BAR -->
+
+  <div class="qbar">
+    <div class="qpre">🤖 ASK AI ›</div>
+    <input class="qin" id="queryInput" placeholder="'Harbour situation?'  'Today summary?'  'High risk news?' — Enter panni press pannu" />
+    <button class="qbtn" id="qBtn" onclick="askAI()">ANALYSE</button>
+  </div>
+  <div class="ai-resp" id="aiResp">
+    <div class="rl">◈ AI INTELLIGENCE RESPONSE</div>
+    <div id="aiRespText"></div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// CONFIG — Change this to your backend URL after deployment
+// ============================================================
+const API_BASE = window.location.origin; // Auto-detect (same server)
+// If running backend separately, change to:
+// const API_BASE = 'https://your-railway-app.railway.app';
+
+// ============================================================
+let allNews = [];
+let waLog = [];
+
+// CLOCK
+function updateClock() {
+  const ist = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Kolkata'}));
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('clock').textContent =
+    `${pad(ist.getHours())}:${pad(ist.getMinutes())}:${pad(ist.getSeconds())} IST`;
+}
+setInterval(updateClock, 1000); updateClock();
+
+// ============================================================
+// FETCH STATS
+// ============================================================
+async function loadStats() {
+  try {
+    const r = await fetch(`${API_BASE}/api/stats`);
+    const d = await r.json();
+    document.getElementById('sTotal').textContent = d.total || 0;
+    document.getElementById('sHigh').textContent = d.high || 0;
+    document.getElementById('sMed').textContent = d.medium || 0;
+    document.getElementById('sAlert').textContent = d.alerted || 0;
+    document.getElementById('sSrc').textContent = d.sourcesActive || 9;
+    if (d.lastFetch) {
+      const t = new Date(d.lastFetch).toLocaleString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      document.getElementById('lastFetch').textContent = `Last fetch: ${t} IST`;
+    }
+  } catch(e) { console.error('Stats error:', e); }
+}
+
+// ============================================================
+// FETCH NEWS
+// ============================================================
+async function loadNews() {
+  try {
+    const r = await fetch(`${API_BASE}/api/news`);
+    const d = await r.json();
+    allNews = d.news || [];
+    renderFeeds();
+    renderKeywords();
+    renderWALog();
+    updateTicker();
+  } catch(e) {
+    document.getElementById('liveFeed').innerHTML = `<div class="empty-state">⚠️ Cannot connect to backend.<br><br>Make sure server is running on ${API_BASE}</div>`;
+    document.getElementById('aiPanel').innerHTML = `<div class="empty-state">⚠️ Backend offline</div>`;
+  }
+}
+
+// ============================================================
+// RENDER LIVE FEED
+// ============================================================
+function renderFeeds() {
+  const riskFilter = document.getElementById('filterRisk').value;
+  const search = document.getElementById('searchBox').value.toLowerCase();
+
+  let filtered = allNews.filter(n => {
+    if (riskFilter === 'high' && n.riskLevel !== 'high') return false;
+    if (riskFilter === 'medium' && !['high','medium'].includes(n.riskLevel)) return false;
+    if (search && !n.title.toLowerCase().includes(search) && !(n.aiSummary||'').toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  const feed = document.getElementById('liveFeed');
+  const aiPanel = document.getElementById('aiPanel');
+
+  if (filtered.length === 0) {
+    feed.innerHTML = `<div class="empty-state">📭 No news found for today matching your filters.<br><br>Click ⟳ FETCH NOW to refresh.</div>`;
+    aiPanel.innerHTML = `<div class="empty-state">No analysis available</div>`;
+    return;
+  }
+
+  // Live feed
+  feed.innerHTML = filtered.map(item => {
+    const srcClass = getSrcClass(item.source);
+    const time = formatTime(item.pubDate);
+    return `
+      <div class="fi" onclick="window.open('${item.link}','_blank')">
+        <div class="fi-meta">
+          <span class="src ${srcClass}">${item.source.toUpperCase().slice(0,10)}</span>
+          <span class="fi-time">${time}</span>
+          ${item.riskLevel ? `<span class="rp r-${item.riskLevel}">${item.riskLevel.toUpperCase()}</span>` : ''}
+        </div>
+        <div class="fi-title">${item.title}</div>
+        ${item.aiSummary ? `<div class="fi-ai">AI: ${item.aiSummary}</div>` : ''}
+        <a class="fi-link" href="${item.link}" target="_blank">→ Read full article</a>
+      </div>
+    `;
+  }).join('');
+
+  // AI analysis — show high/medium risk items
+  const flagged = filtered.filter(n => ['high','medium'].includes(n.riskLevel));
+  if (flagged.length === 0) {
+    aiPanel.innerHTML = `<div class="empty-state">✅ No high/medium risk items detected today.<br>All signals are LOW risk.</div>`;
+  } else {
+    aiPanel.innerHTML = flagged.map(item => {
+      const level = item.riskLevel === 'high' ? 'danger' : 'warn';
+      const emoji = item.riskLevel === 'high' ? '🚨' : '⚠️';
+      return `
+        <div class="ai-alert">
+          <div class="aa-head">
+            <div class="aa-title t-${level}">${emoji} ${item.title.slice(0,70)}${item.title.length>70?'...':''}</div>
+          </div>
+          <div class="aa-body">${item.aiSummary || item.summary?.slice(0,150) || 'Analysis pending...'}</div>
+          <div class="aa-meta">
+            ${item.location ? `<span class="chip cl">📍 ${item.location}</span>` : ''}
+            ${item.confidence ? `<span class="chip cc">⚡ ${item.confidence}% confidence</span>` : ''}
+            ${item.category ? `<span class="chip ccat">🏷 ${item.category}</span>` : ''}
+            ${item.action ? `<span class="chip cs">→ ${item.action}</span>` : ''}
+            <span class="chip cl">${item.source}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+// ============================================================
+// RENDER KEYWORDS
+// ============================================================
+function renderKeywords() {
+  const kwMap = {};
+  const KEYWORDS = ['protest','sterlite','fishermen','harbour','bandh','caste','ottapidaram','kovilpatti','arrest','flood','fire','rumour','tension','election','strike'];
+
+  allNews.forEach(n => {
+    const text = `${n.title} ${n.aiSummary||''}`.toLowerCase();
+    KEYWORDS.forEach(kw => {
+      if (text.includes(kw)) kwMap[kw] = (kwMap[kw]||0) + 1;
+    });
+  });
+
+  const sorted = Object.entries(kwMap).sort((a,b) => b[1]-a[1]);
+  document.getElementById('kwCount').textContent = `${sorted.length} KEYWORDS`;
+
+  if (sorted.length === 0) {
+    document.getElementById('kwGrid').innerHTML = `<div class="empty-state" style="grid-column:1/-1">No keyword hits yet today</div>`;
+    return;
+  }
+
+  const maxCount = sorted[0]?.[1] || 1;
+  document.getElementById('kwGrid').innerHTML = sorted.slice(0, 12).map(([kw, count]) => {
+    const cls = count >= maxCount * 0.7 ? 'hot' : count >= maxCount * 0.4 ? 'warm' : '';
+    return `<div class="kw ${cls}"><span class="kw-w">${kw}</span><span class="kw-c">${count}↑</span></div>`;
+  }).join('');
+}
+
+// ============================================================
+// RENDER WA LOG
+// ============================================================
+function renderWALog() {
+  const alerted = allNews.filter(n => n.alerted);
+  const el = document.getElementById('waLog');
+  if (alerted.length === 0) {
+    el.innerHTML = `<div class="empty-state">No WhatsApp alerts sent yet.<br><br>Configure WHATSAPP_TOKEN in .env to enable.</div>`;
+    return;
+  }
+  el.innerHTML = alerted.map(n => `
+    <div class="wa-item">
+      <div class="wa-ico">📲</div>
+      <div class="wa-c">
+        <div class="wa-to">→ Officers · ${formatTime(n.pubDate)}</div>
+        <div class="wa-msg">${n.riskLevel === 'high' ? '🚨' : '⚠️'} ${n.title.slice(0,80)}...</div>
+        <span class="wa-st st-sent">✓ SENT</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// UPDATE TICKER
+// ============================================================
+function updateTicker() {
+  const flagged = allNews.filter(n => ['high','medium'].includes(n.riskLevel));
+  if (flagged.length === 0) return;
+
+  const items = flagged.map(n => {
+    const emoji = n.riskLevel === 'high' ? '🔴' : '🟡';
+    return `<span class="ticker-item"><span>${emoji}</span>${n.title.slice(0,80)} · ${n.source}</span>`;
+  });
+
+  // Duplicate for seamless loop
+  const doubled = [...items, ...items].join('');
+  document.getElementById('ticker').innerHTML = doubled;
+}
+
+// ============================================================
+// MANUAL FETCH
+// ============================================================
+async function manualFetch() {
+  const btn = document.getElementById('fetchBtn');
+  btn.disabled = true;
+  btn.textContent = '⟳ FETCHING...';
+
+  try {
+    const r = await fetch(`${API_BASE}/api/fetch`, { method: 'POST' });
+    const d = await r.json();
+    await loadStats();
+    await loadNews();
+    btn.textContent = `✓ ${d.count} items`;
+    setTimeout(() => { btn.textContent = '⟳ FETCH NOW'; btn.disabled = false; }, 3000);
+  } catch(e) {
+    btn.textContent = '✗ ERROR';
+    setTimeout(() => { btn.textContent = '⟳ FETCH NOW'; btn.disabled = false; }, 3000);
+  }
+}
+
+// ============================================================
+// AI QUERY
+// ============================================================
+async function askAI() {
+  const q = document.getElementById('queryInput').value.trim();
+  if (!q) return;
+
+  const btn = document.getElementById('qBtn');
+  const respDiv = document.getElementById('aiResp');
+  const respText = document.getElementById('aiRespText');
+
+  btn.disabled = true;
+  respDiv.classList.add('show');
+  respText.innerHTML = '◈ Analysing...';
+
+  try {
+    const r = await fetch(`${API_BASE}/api/query`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q })
+    });
+    const d = await r.json();
+    respText.innerHTML = (d.answer || 'No response').replace(/\n/g, '<br>');
+  } catch(e) {
+    respText.innerHTML = `⚠️ Error: ${e.message}`;
+  }
+
+  btn.disabled = false;
+  document.getElementById('queryInput').value = '';
+}
+
+document.getElementById('queryInput').addEventListener('keypress', e => { if(e.key==='Enter') askAI(); });
+
+// ============================================================
+// HELPERS
+// ============================================================
+function getSrcClass(src) {
+  const s = (src||'').toLowerCase();
+  if (s.includes('dinamalar') || s.includes('dinamani') || s.includes('maalai')) return 's-din';
+  if (s.includes('hindu')) return 's-hin';
+  if (s.includes('times')) return 's-toi';
+  if (s.includes('vikatan')) return 's-vik';
+  if (s.includes('puthiya') || s.includes('newsminute')) return 's-put';
+  return 's-def';
+}
+
+function formatTime(dateStr) {
+  if (!dateStr) return '--:--';
+  try {
+    return new Date(dateStr).toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit', minute: '2-digit',
+      day: '2-digit', month: 'short'
+    });
+  } catch { return '--:--'; }
+}
+
+// ============================================================
+// AUTO-REFRESH every 5 minutes
+// ============================================================
+async function init() {
+  await loadStats();
+  await loadNews();
+}
+
+init();
+setInterval(init, 5 * 60 * 1000); // Refresh UI every 5 min
+</script>
+
+</body>
+</html>
